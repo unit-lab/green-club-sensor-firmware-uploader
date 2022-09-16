@@ -14,7 +14,6 @@ import atexit
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
 
-server_projects_url = 'https://irs-socket-server.herokuapp.com/projects'
 repo_binary_url = 'https://api.github.com/repos/unit-lab/green-club-sensor/releases'
 
 esptool_options = ['--chip', 'esp32',

@@ -13,3 +13,6 @@ First, download the latest release for your operating system from the releases p
 
 ### Windows
 - Double click on the application to run it.
+
+## Credits
+This tool is based on the [Interaction Research Studio](https://github.com/interactionresearchstudio)'s esptool-python-gui, originally made for the awesome [Yo-Yo Machines](https://yoyomachines.io)!

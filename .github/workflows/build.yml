@@ -13,9 +13,8 @@ jobs:
             TARGET: macos
             CMD_BUILD: >
                 pyinstaller GreenClub-Sensor-Firmware-Uploader.spec
-                cd dist/ &&
-                zip -r9 GreenClub-Sensor-Firmware-Uploader.app.zip GreenClub-Sensor-Firmware-Uploader.app/
-            OUT_FILE_NAME: clipster.zip
+                zip -r9 Green\ Club\ Sensor\ Firmware\ Uploader.app.zip dist/Green\ Club\ Sensor\ Firmware\ Uploader.app/
+            OUT_FILE_NAME: Green\ Club\ Sensor\ Firmware\ Uploader.app.zip
             ASSET_MIME: application/zip
           - os: windows-latest
             TARGET: windows

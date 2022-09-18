@@ -11,7 +11,7 @@ macholib==1.16
 modulegraph==0.19.2
 numpy==1.23.3
 Pillow==9.2.0
-py2app==0.28.2
+py2app==0.28.2; sys_platform == 'darwin'
 pyaes==1.6.1
 pycparser==2.21
 pyinstaller==5.4.1

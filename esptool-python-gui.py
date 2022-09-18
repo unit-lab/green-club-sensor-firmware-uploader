@@ -14,8 +14,6 @@ import atexit
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
 
-repo_binary_url = 'https://api.github.com/repos/unit-lab/green-club-sensor/releases'
-
 esptool_options = ['--chip', 'esp32',
                    '--port', '/dev/cu.myserial',
                    '--baud', '921600',
@@ -316,6 +314,8 @@ class MainFrame(wx.Frame):
 
         self.status_bar.SetStatusText("Idle")
 
+        self.repo_binary_url = 'https://api.github.com/repos/unit-lab/green-club-sensor/releases'
+
         # Connect Events
         self.serial_choice.Bind(wx.EVT_CHOICE, self.on_serial_choice)
         self.serial_refresh_button.Bind(wx.EVT_BUTTON, self.on_serial_refresh)
@@ -324,7 +324,7 @@ class MainFrame(wx.Frame):
 
         print("Refreshing serial list...")
         self.update_serial_list()
-        self.update_projects_list()
+
 
     def __del__(self):
         pass
@@ -422,11 +422,6 @@ class MainFrame(wx.Frame):
                                              lambda new_list: self.populate_serial_list(new_list))
         self.esptool_thread.start()
         self.serial_refresh_button.Disable()
-
-    def update_projects_list(self):
-        self.esptool_thread = EspToolManager(EspToolManager.get_projects_list,
-                                             lambda new_list: self.populate_projects_list(new_list))
-        self.esptool_thread.start()
 
     # Event handlers
     def on_serial_refresh(self, event):

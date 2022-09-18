@@ -33,7 +33,7 @@ exe = EXE(pyz,
 app = BUNDLE(exe,
              name='Green Club Sensor Firmware Uploader.app',
              icon='images/icon.icns',
-             bundle_identifier=None,
+             bundle_identifier='world.greenclub.sensor-firmware-uploader',
              info_plist={
                 'NSHighResolutionCapable': 'True'
                 }

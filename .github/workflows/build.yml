@@ -12,7 +12,7 @@ jobs:
           - os: macos-latest
             TARGET: macos
             CMD_BUILD: >
-                pyinstaller GreenClub-Sensor-Firmware-Uploader.spec
+                pyinstaller GreenClub-Sensor-Firmware-Uploader.spec &&
                 zip -r9 Green\ Club\ Sensor\ Firmware\ Uploader.app.zip dist/Green\ Club\ Sensor\ Firmware\ Uploader.app/
             OUT_FILE_NAME: Green\ Club\ Sensor\ Firmware\ Uploader.app.zip
             ASSET_MIME: application/zip

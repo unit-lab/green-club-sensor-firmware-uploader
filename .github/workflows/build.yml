@@ -13,13 +13,13 @@ jobs:
             TARGET: macos
             CMD_BUILD: >
                 pyinstaller GreenClub-Sensor-Firmware-Uploader.spec &&
-                zip -r9 Green\ Club\ Sensor\ Firmware\ Uploader.app.zip dist/Green\ Club\ Sensor\ Firmware\ Uploader.app/
-            OUT_FILE_NAME: Green\ Club\ Sensor\ Firmware\ Uploader.app.zip
+                zip -r9 Green-Club-Sensor-Firmware-Uploader.app.zip dist/Green\ Club\ Sensor\ Firmware\ Uploader.app/
+            OUT_FILE_NAME: GreenClub-Sensor-Firmware-Uploader.app.zip
             ASSET_MIME: application/zip
           - os: windows-latest
             TARGET: windows
-            CMD_BUILD: pyinstaller -F -w -n Green\ Club\ Sensor\ Firmware\ Uploader --icon=images/icon.ico esptool-python-gui.py
-            OUT_FILE_NAME: Green\ Club\ Sensor\ Firmware\ Uploader.exe
+            CMD_BUILD: pyinstaller -F -w -n Green\ Club\ Sensor\ Firmware\ Uploader --icon=images/icon.ico esptool-python-gui.py && tar.exe -a -c -f GreenClub-Sensor-Firmware-Uploader.exe.zip dist/Green\ Club\ Sensor\ Firmware\ Uploader.exe
+            OUT_FILE_NAME: GreenClub-Sensor-Firmware-Uploader.exe
             ASSET_MIME: application/vnd.microsoft.portable-executable
     steps:
     - uses: actions/checkout@v3

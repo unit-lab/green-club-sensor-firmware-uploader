@@ -14,17 +14,6 @@ import atexit
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
 
-esptool_options = ['--chip', 'esp32',
-                   '--port', '/dev/cu.myserial',
-                   '--baud', '921600',
-                   '--before', 'default_reset',
-                   '--after', 'hard_reset',
-                   'write_flash', '-z', '--flash_mode', 'dio',
-                   '--flash_freq', '80m',
-                   '--flash_size', 'detect',
-                   '0x0000', 'app.ino.bin'
-                   ]
-
 esptool_erase_options = ['--chip', 'esp32',
                          '--port', '/dev/cu.myserial',
                          '--baud', '921600',
@@ -79,19 +68,17 @@ class EspToolManager(Thread):
         else:
             self.runnable(self, self.port, self.url)
 
-    # Get bin download url based on GitHub API URL
+    # Get bin download urls based on GitHub API URL
     @staticmethod
-    def get_bin_url(api_url):
+    def get_bin_dict(api_url):
         try:
             with urllib.request.urlopen(api_url) as url:
                 data = json.loads(url.read().decode())
-                bin_url = None
+                bin_dict = {}
                 for asset in data[0]['assets']:
-                    if asset['name'] == 'app-combined.bin':
-                        bin_url = asset['browser_download_url']
-                        return bin_url
-                print('Error: No app-combined.bin in release.')
-                return bin_url
+                    bin_dict[asset['name']] = asset['browser_download_url']
+                print(bin_dict)
+                return bin_dict
         except Exception as e:
             print(e)
             return None
@@ -147,31 +134,49 @@ class EspToolManager(Thread):
     # Upload bin file from GitHub to device
     def upload_from_github(self, serial_port, url):
         # Get bin file URL from GitHub
-        bin_url = self.get_bin_url(url)
-        if bin_url is None:
+        bin_dict = self.get_bin_dict(url)
+        if bin_dict is None:
             print("Error finding firmware!")
             self.callback(1)
 
-        # Download bin file and save temporarily
-        fp = self.get_bin_file(bin_url)
-        if fp is None:
-            print("Error downloading firmware!")
-            self.callback(2)
+        # Download bin files and save temporarily
+        bin_temp_paths = {}
+        for f in bin_dict:
+            bin_temp_paths[f] = self.get_bin_file(bin_dict[f])
+            if bin_temp_paths[f] is None:
+                print("Error downloading firmware!")
+                self.callback(2)
+
+        print(bin_temp_paths)
 
         # Write to device with esptool
-        esptool_options[3] = serial_port
         esptool_erase_options[3] = serial_port
-        esptool_options[-1] = fp.name
+        esptool_options = ['--chip', 'esp32',
+                        '--port', serial_port,
+                        '--baud', '921600',
+                        '--before', 'default_reset',
+                        '--after', 'hard_reset',
+                        'write_flash', '-z', '--flash_mode', 'dio',
+                        '--flash_freq', '80m',
+                        '--flash_size', 'detect',
+                        '0x1000', bin_temp_paths['bootloader.bin'].name,
+                        '0x8000', bin_temp_paths['partitions.bin'].name,
+                        '0xe000', bin_temp_paths['boot_app0.bin'].name,
+                        '0x10000', bin_temp_paths['app.bin'].name
+                        ]
+
         try:
             print(" ")
             print("👇 Please hold down BOOT button 👇")
             if self.erase:
                 esptool_main(esptool_erase_options)
             esptool_main(esptool_options)
-            os.unlink(fp.name)
+            for f in bin_temp_paths:
+                os.unlink(bin_temp_paths[f].name)
             self.callback(0)
         except Exception as e:
-            os.unlink(fp.name)
+            for f in bin_temp_paths:
+                os.unlink(bin_temp_paths[f].name)
             print("Error uploading to device!")
             print(e)
             self.callback(3)
@@ -210,6 +215,9 @@ class RedirectText:
     def flush(self):
         # noinspection PyStatementEffect
         None
+
+    def isatty(self):
+        return False
 
 
 class DropTarget(wx.FileDropTarget):
